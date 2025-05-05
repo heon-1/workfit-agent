@@ -1,6 +1,6 @@
 # WORKFIT 마케팅 AGENT 프로세스
 
-![마케팅 에이전트 프로세스](https://storage.googleapis.com/fundive_public_backup/Gp6EkBmawAELvhB-1.jpg)
+![마케팅 에이전트 프로세스](https://raw.githubusercontent.com/heon-1/workfit-agent/main/soruce/01.jpg)
 
 RSS 피드 및 웹 스크래핑을 통해 최신 정보를 수집하고, 생성형 AI를 활용하여 주요 포인트를 추출한 뒤, 다양한 채널로 전송하는 수준입니다.
 
