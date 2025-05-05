@@ -16,15 +16,21 @@ def load_config(env_path: str = '.env') -> Dict[str, Any]:
         Dict[str, Any]: 로드된 설정 딕셔너리
     """
     config: Dict[str, Any] = {}
+    logging.info(f"Attempting to load environment variables from: {os.path.abspath(env_path)}")
 
     # 1. .env 파일 로드 (환경 변수 설정)
     try:
-        # load_dotenv는 기존 환경 변수를 덮어쓰지 않음 (시스템 환경 변수 우선)
-        # .env 파일의 값을 우선하려면 override=True 사용 가능
-        load_dotenv(dotenv_path=env_path)
-        logging.info(f".env 파일 로드 시도: {env_path}")
+        # override=True: .env 파일 값이 시스템 환경 변수보다 우선 적용됨
+        loaded = load_dotenv(dotenv_path=env_path, override=True, verbose=True)
+        if loaded:
+            logging.info(f".env file loaded successfully from {env_path}")
+            print(f"DEBUG: .env file loaded successfully from {env_path}") # 디버깅 출력
+        else:
+            logging.warning(f".env file not found or empty at {env_path}")
+            print(f"DEBUG: .env file not found or empty at {env_path}") # 디버깅 출력
     except Exception as e:
         logging.warning(f".env 파일 ({env_path}) 로드 중 오류 발생: {e}")
+
     # RSS 피드 목록 처리
     config['rss_feeds'] = []
     i = 1
@@ -42,8 +48,10 @@ def load_config(env_path: str = '.env') -> Dict[str, Any]:
 
     # AI 설정
     config['ai'] = {}
-    config['ai']['api_key'] = os.getenv('GEMINI_API_KEY')
-    config['ai']['model_name'] = os.getenv('GEMINI_MODEL_NAME', "gemini-2.5-flash-preview-04-17")
+    loaded_api_key = os.getenv('GEMINI_API_KEY')
+    print(f"DEBUG: Value read for GEMINI_API_KEY: {loaded_api_key}") # API 키 값 디버깅 출력
+    config['ai']['api_key'] = loaded_api_key
+    config['ai']['model_name'] = os.getenv('GEMINI_MODEL_NAME', "gemini-1.5-flash-preview-04-17")
 
     if config['ai']['api_key']:
         logging.info("환경 변수에서 Gemini API 키를 로드했습니다.")

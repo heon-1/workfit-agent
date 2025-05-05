@@ -1,6 +1,6 @@
 import logging
 from typing import List, Optional
-import google.generativeai as genai # 라이브러리 import
+import google.generativeai as genai
 
 from .base_processor import BaseProcessor
 # 여기에 사용할 생성형 AI 라이브러리 import (예: from google.generativeai import GenerativeModel)
@@ -73,8 +73,9 @@ class AiProcessor(BaseProcessor):
         try:
             # Gemini API 호출
             response = self.model.generate_content(prompt)
-            logging.debug(f"AI 응답 수신:
-{response.text}")
+            # 로깅 메시지를 별도로 생성
+            log_message = f"AI 응답 수신:\n{response.text}"
+            logging.debug(log_message) # 생성된 메시지로 로깅
             # 결과 파싱
             points = self._parse_response(response.text)
             return points
