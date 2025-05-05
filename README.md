@@ -1,9 +1,10 @@
 # WORKFIT 마케팅 AGENT 프로세스
 
-![마케팅 에이전트 프로세스](/source/01.jpg)
+![마케팅 에이전트 프로세스](https://storage.googleapis.com/fundive_public_backup/Gp6EkBmawAELvhB-1.jpg)
 
 RSS 피드 및 웹 스크래핑을 통해 최신 정보를 수집하고, 생성형 AI를 활용하여 주요 포인트를 추출한 뒤, 다양한 채널로 전송하는 수준입니다.
 
+WORKFIT 브랜드톤에 맞춰져 있기 때문에
 개별 커스텀을 원하는 마케터나, 창업자들은 기능 개선에 대한 논의는 누구나 참여 가능한 아래 오픈채팅방에서 네트워킹을 하세요
 
 [카카오톡 오픈채팅 참여하기](https://open.kakao.com/o/gl5tS9rh)
