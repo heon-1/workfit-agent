@@ -1,0 +1,7 @@
+GEMINI_API_KEY="YOUR_GOOGLE_API_KEY" # 여기에 실제 Google AI Studio 또는 GCP에서 발급받은 키를 입력하세요.
+GEMINI_MODEL_NAME="gemini-1.5-flash" # 사용할 Gemini 모델 이름 (선택 사항, 기본값: gemini-1.5-flash)
+RSS_FEED_1="YOUR_RSS_FEED_URL_1" # 스크래핑할 RSS 피드 URL 1
+RSS_FEED_2="YOUR_RSS_FEED_URL_2" # 스크래핑할 RSS 피드 URL 2
+RSS_FEED_3="YOUR_RSS_FEED_URL_3" # 스크래핑할 RSS 피드 URL 3 (필요시 추가)
+RSS_FEED_4="YOUR_RSS_FEED_URL_4" # 스크래핑할 RSS 피드 URL 4 (필요시 추가)
+
