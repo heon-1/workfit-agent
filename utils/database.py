@@ -153,6 +153,63 @@ def get_all_articles(limit: int = 100) -> List[Dict[str, Any]]:
     finally:
         if conn: conn.close()
 
+def get_articles_without_gen_image(limit: int = 10) -> List[Dict[str, Any]]:
+    """gen_image 필드가 비어있거나 NULL인 기사를 조회합니다."""
+    conn = get_db_connection()
+    if conn is None: return []
+    articles = []
+    try:
+        cursor = conn.cursor()
+        # gen_image가 NULL이거나 빈 문자열인 경우를 조회
+        cursor.execute("SELECT id, title, link, summary FROM articles WHERE gen_image IS NULL OR gen_image = '' ORDER BY scraped_at DESC LIMIT ?", (limit,))
+        rows = cursor.fetchall()
+        for row in rows:
+            article = dict(row) # row_factory에 의해 이미 dict일 수 있음
+            # dopamine_points는 이미지 생성에 직접 필요하지 않으므로 여기서는 제외 (필요시 추가 조회)
+            articles.append(article)
+        return articles
+    except sqlite3.Error as e:
+        logging.error(f"gen_image 없는 기사 조회 실패: {e}", exc_info=True)
+        return []
+    finally:
+        if conn: conn.close()
+
+def update_article_gen_image(article_id: int, gen_image_path: str) -> bool:
+    """ID를 기준으로 특정 기사의 gen_image 필드를 업데이트합니다.
+
+    Args:
+        article_id (int): 업데이트할 기사의 고유 ID
+        gen_image_path (str): 저장된 생성 이미지의 경로
+
+    Returns:
+        bool: 업데이트 성공 여부
+    """
+    if not article_id or not gen_image_path:
+        logging.warning("업데이트를 위한 ID 또는 이미지 경로가 없습니다.")
+        return False
+
+    conn = get_db_connection()
+    if conn is None: return False
+
+    sql = "UPDATE articles SET gen_image = ? WHERE id = ?"
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(sql, (gen_image_path, article_id))
+        conn.commit()
+
+        if cursor.rowcount > 0:
+            logging.info(f"기사(id={article_id}) gen_image 업데이트 성공: {gen_image_path}")
+            return True
+        else:
+            logging.warning(f"기사(id={article_id})를 찾지 못했거나 gen_image 업데이트할 내용이 없습니다.")
+            return False
+    except sqlite3.Error as e:
+        logging.error(f"기사 gen_image 업데이트 실패: {e} - id={article_id}, path={gen_image_path}", exc_info=True)
+        return False
+    finally:
+        if conn: conn.close()
+
 """
 # --- 미디어 정보 업데이트 함수 (추후 구현 시 활성화) ---
 def update_article_media(link: str, media_data: Dict[str, Optional[str]]) -> bool:

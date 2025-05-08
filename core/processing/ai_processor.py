@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict
 import google.generativeai as genai
 
 from .base_processor import BaseProcessor
@@ -131,4 +131,51 @@ class AiProcessor(BaseProcessor):
             logging.warning(f"AI 응답에서 유효한 포인트를 파싱하지 못했습니다. 원본 응답: {response_text}")
             return ["추출된 포인트 없음"]
 
-        return points 
+        return points
+
+    def extract_image_keywords(self, title: str) -> List[str]:
+        """뉴스 제목에서 이미지 생성에 적합한 핵심 키워드를 2~3개 추출합니다.
+
+        Args:
+            title (str): 뉴스 기사 제목
+
+        Returns:
+            List[str]: 추출된 키워드 리스트. 실패 시 빈 리스트 반환.
+        """
+        if not title:
+            logging.warning("이미지 키워드를 추출할 제목이 없습니다.")
+            return []
+
+        if not self.model:
+            logging.error("AI 모델이 초기화되지 않아 이미지 키워드를 추출할 수 없습니다.")
+            return []
+
+        # 키워드 추출을 위한 프롬프트
+        prompt = f"""다음 뉴스 헤드라인을 분석하여, 이 내용을 시각적으로 가장 잘 나타낼 수 있는 핵심 키워드(명사, 고유명사 위주)를 2~3개 추출해주세요.
+결과는 쉼표(,)로 구분된 키워드 목록으로만 답해주세요. 예를 들어 '키워드1, 키워드2, 키워드3' 형식입니다.
+
+헤드라인: "{title}"
+
+추출된 키워드:"""
+        
+        logging.debug(f"이미지 키워드 추출 프롬프트:\n{prompt}")
+
+        try:
+            response = self.model.generate_content(prompt)
+            response_text = response.text.strip()
+            logging.debug(f"이미지 키워드 추출 응답: {response_text}")
+
+            # 응답 파싱 (쉼표로 구분된 리스트)
+            if response_text:
+                keywords = [keyword.strip() for keyword in response_text.split(',') if keyword.strip()]
+                # 간단한 후처리 (예: 따옴표 제거)
+                keywords = [kw.replace('"', '').replace("'", '') for kw in keywords]
+                logging.info(f"'{title}' -> 추출된 이미지 키워드: {keywords}")
+                return keywords
+            else:
+                logging.warning("AI로부터 이미지 키워드 응답을 받지 못했습니다.")
+                return []
+
+        except Exception as e:
+            logging.error(f"'{title}'에 대한 이미지 키워드 추출 중 오류 발생: {e}", exc_info=True)
+            return [] 
